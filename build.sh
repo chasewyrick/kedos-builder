@@ -2,7 +2,7 @@
 
 #
 # This script is used to build Kedos on top of Ubuntu.
-# It is a WIP so do not expect it to product an iso yet.
+# It is a WIP so do not expect it to produce an iso yet.
 # Copyright Abraham Masri. 2017
 #
 
