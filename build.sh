@@ -29,13 +29,19 @@ startBuild () {
 
 
     # Check if we are root
-    if [[ "$(whoami)" != 'root' ]]; then logEvent 'You are not root, please run as root.' return; fi
+    if [[ "$(whoami)" != 'root' ]]; then
+        logEvent 'You are not root, please run as root.';
+        return;
+    fi
 
     # Be nice and log
     echo "Welcome to Kedos Builder"
 
     # Check if we have kedos files inside
-    if [ "$(ls -A $PWD/system/)" == '' ]; then logEvent "Kedos system packages are missing. Check $PWD/system/"; fi
+    if [ "$(ls -A $PWD/system/)" == '' ]; then
+        logEvent "Kedos system packages are missing. Check $PWD/system/";
+        return;
+    fi
 
 
     # Update all apt packages
@@ -45,8 +51,7 @@ startBuild () {
     # Clean up before doing anything
     logEvent 'Cleaning up [Directories and Live Build]..'
     rm -rf build_tmp
-    lb clean > /dev/null
-
+    lb clean noauto > /dev/null
 
     # Setup our building directories (We keep all tmp files inside instead of /tmp/)
     logEvent 'Setting up the building directory'
@@ -56,11 +61,16 @@ startBuild () {
     logEvent "Downloading Ubuntu $ubuntuBuildName $ubuntuBuildVersion.."
     wget "http://releases.ubuntu.com/$ubuntuBuildName/ubuntu-$ubuntuBuildVersion-desktop-amd64.iso" -q --show-progress --output-document "$ubuntuBuildName".iso
 
-    # Configure Live Build then actually build
+    # Configure Live Build | HOOKS REMOVED <--
     logEvent 'Running configurations..'
-    lb config noauto --architecture amd64 --binary-images iso-hybrid --bootloader syslinux --bootstrap-keyring ubuntu-keyring \
-    --build-with-chroot false --distribution "$ubuntuBuildName" --hooks "$HOOKS" \ --iso-application "Kedos" --iso-volume "Kedos-$kedosBuildName-$kedosBuildVersion" \
+    lb config noauto --distribution "$ubuntuBuildName" --architecture amd64 --binary-images iso-hybrid --bootloader syslinux --bootstrap-keyring ubuntu-keyring \
+    --build-with-chroot false --iso-application "Kedos" --iso-volume "Kedos-$kedosBuildName-$kedosBuildVersion" \
     --memtest none --mode ubuntu --parent-archive-areas "main restricted universe multiverse" --source false --zsync false
+
+    # Run build
+    logEvent 'Building system..'
+    lb build
+
 }
 
 startBuild

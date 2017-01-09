@@ -9,6 +9,8 @@ This script is used to build Kedos using Live Build(lb):
 
 The builder is WIP. It does not generate an .iso at the moment.
 
+Note: The folder 'config' is used by Live Build(lb).
+
 Building
 -----------
 
